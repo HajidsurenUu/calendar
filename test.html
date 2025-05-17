@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Birthday Countdown</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fffaf5;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #ff6f61;
+      font-size: 1.8rem;
+    }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+      gap: 12px;
+      margin-top: 25px;
+    }
+
+    .day {
+      background-color: #ffe0d3;
+      border-radius: 12px;
+      padding: 20px 10px;
+      font-weight: bold;
+      font-size: 1rem;
+      transition: background 0.3s;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+    }
+
+    .day.locked {
+      background-color: #ddd;
+      color: #777;
+      cursor: not-allowed;
+    }
+
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 20px;
+      width: 90%;
+      max-width: 320px;
+      border: 2px solid #ff6f61;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      display: none;
+      z-index: 100;
+    }
+
+    .popup.show {
+      display: block;
+    }
+
+    .popup p {
+      font-size: 1rem;
+      margin-bottom: 1em;
+    }
+
+    .popup button {
+      background-color: #ff6f61;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    @media (max-width: 400px) {
+      .day {
+        padding: 16px 8px;
+        font-size: 0.9rem;
+      }
+
+      .popup p {
+        font-size: 0.95rem;
+      }
+
+      .popup button {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🎁 Countdown to Your Birthday!</h1>
+  <div class="calendar" id="calendar"></div>
+
+  <div class="popup" id="popup">
+    <p id="popupContent"></p>
+    <button onclick="closePopup()">xD</button>
+  </div>
+
+<script>
+  const startDate = new Date("2025-05-17"); // Starts on his birthday
+  const countdownDays = 7;
+  const unlockHour = 9;
+  const now = new Date();
+
+  const messages = [
+    "Day 1",
+    "Day 2",
+    "Day 3",
+    "Day 4",
+    "Day 5",
+    "Day 6",
+    "Day 7"
+  ];
+
+  const calendar = document.getElementById("calendar");
+
+  for (let i = 0; i < countdownDays; i++) {
+    const dayDate = new Date(startDate);
+    dayDate.setDate(startDate.getDate() + i); // From May 17 → May 23
+    const unlockTime = new Date(dayDate);
+    unlockTime.setHours(unlockHour, 0, 0, 0);
+
+    const dayEl = document.createElement("div");
+    dayEl.classList.add("day");
+    dayEl.innerText = `Day ${i + 1}`;
+
+    if (
+      now.toDateString() === dayDate.toDateString() &&
+      now >= unlockTime
+    ) {
+      // Clickable today after 9AM
+      dayEl.onclick = () => showPopup(messages[i]);
+    } else if (now > unlockTime) {
+      // Past days (already unlocked)
+      dayEl.onclick = () => showPopup(messages[i]);
+    } else {
+      // Locked days (future or before unlock hour)
+      dayEl.classList.add("locked");
+      dayEl.onclick = () => {
+        const today = now.toDateString() === dayDate.toDateString();
+        if (today && now < unlockTime) {
+          showPopup("Come back");
+        } else {
+          showPopup("locked");
+        }
+      };
+    }
+
+    calendar.appendChild(dayEl);
+  }
+
+  function showPopup(message) {
+    document.getElementById("popupContent").innerText = message;
+    document.getElementById("popup").classList.add("show");
+  }
+
+  function closePopup() {
+    document.getElementById("popup").classList.remove("show");
+  }
+</script>
+
+
+</body>
+</html>
+
