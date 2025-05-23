@@ -4,18 +4,24 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Birthday Countdown</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #fffaf5;
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(to bottom right, #fff0f5, #ffe4e1);
       margin: 0;
       padding: 20px;
       text-align: center;
+      overflow: hidden;
     }
 
     h1 {
-      color: #ff6f61;
-      font-size: 1.8rem;
+      font-family: 'Pacifico', cursive;
+      color: #ff6fa0;
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 2;
     }
 
     .calendar {
@@ -23,23 +29,49 @@
       grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
       gap: 12px;
       margin-top: 25px;
+      position: relative;
+      z-index: 2;
+    }
+
+    @media (min-width: 768px) {
+      .calendar {
+        grid-template-columns: repeat(5, 1fr);
+      }
     }
 
     .day {
-      background-color: #ffe0d3;
-      border-radius: 12px;
+      background-color: #fff;
+      border: 2px dashed #ffc4d6;
+      border-radius: 16px;
       padding: 20px 10px;
       font-weight: bold;
       font-size: 1rem;
-      transition: background 0.3s;
-      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+      color: #d63384;
       cursor: pointer;
+      transition: transform 0.2s ease, background-color 0.3s ease;
+      box-shadow: 0 4px 10px rgba(255, 105, 180, 0.1);
+      position: relative;
+    }
+
+    .day:hover:not(.locked) {
+      transform: scale(1.05);
+      background-color: #fff0f7;
+    }
+
+    .day::after {
+      content: "\1F496";
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      font-size: 1rem;
     }
 
     .day.locked {
-      background-color: #ddd;
-      color: #777;
+      background-color: #f7f7f7;
+      border-color: #ddd;
+      color: #aaa;
       cursor: not-allowed;
+      box-shadow: none;
     }
 
     .popup {
@@ -51,9 +83,9 @@
       padding: 20px;
       width: 90%;
       max-width: 320px;
-      border: 2px solid #ff6f61;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      border: 2px solid #ff69b4;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(255, 105, 180, 0.3);
       display: none;
       z-index: 100;
     }
@@ -63,16 +95,17 @@
     }
 
     .popup p {
-      font-size: 1rem;
+      font-size: 1.1rem;
       margin-bottom: 1em;
+      color: #d63384;
     }
 
     .popup button {
-      background-color: #ff6f61;
+      background-color: #ff69b4;
       color: white;
       border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
+      padding: 10px 24px;
+      border-radius: 10px;
       font-size: 1rem;
       cursor: pointer;
     }
@@ -84,87 +117,201 @@
       }
 
       .popup p {
-        font-size: 0.95rem;
+        font-size: 1rem;
       }
 
       .popup button {
         font-size: 0.95rem;
       }
     }
+
+    .heart-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: url('https://cdn-icons-png.flaticon.com/512/833/833472.png') no-repeat center/contain;
+      animation: floatHeart 8s linear infinite;
+      opacity: 0.8;
+    }
+
+    @keyframes floatHeart {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.8; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    .floating-photo {
+      position: absolute;
+      width: 15vw;
+      max-width: 120px;
+      border-radius: 12px;
+      border: 4px solid white;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      animation: floatPhoto linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes floatPhoto {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      100% { transform: translateY(-150vh) rotate(360deg); opacity: 0; }
+    }
+
+    .col1 { left: 10%; }
+    .col2 { left: 25%; }
+    .col3 { left: 40%; }
+    .col4 { left: 60%; }
+    .col5 { left: 75%; }
+
+    @media (max-width: 600px) {
+      .floating-photo {
+        width: 18vw;
+        border-width: 2px;
+      }
+
+      .col1 { left: 5%; }
+      .col2 { left: 20%; }
+      .col3 { left: 35%; }
+      .col4 { left: 60%; }
+      .col5 { left: 75%; }
+    }
   </style>
 </head>
 <body>
-  <h1>🎁 Countdown to Your Birthday!</h1>
+<h1>🎉 Garidaa’s Birthday Countdown Adventure 🎁</h1>
   <div class="calendar" id="calendar"></div>
 
   <div class="popup" id="popup">
     <p id="popupContent"></p>
-    <button onclick="closePopup()">xD</button>
+    <button onclick="closePopup()">Aww 💕</button>
   </div>
 
-<script>
-  const startDate = new Date("2025-05-17"); // Starts on his birthday
-  const countdownDays = 7;
-  const unlockHour = 9;
-  const now = new Date();
+  <div class="heart-container" id="heartContainer"></div>
 
-  const messages = [
-    "Day 1",
-    "Day 2",
-    "Day 3",
-    "Day 4",
-    "Day 5",
-    "Day 6",
-    "Day 7"
-  ];
+  <!-- Floating Photos -->
+  <img src="photo1.jpg" class="floating-photo col1" style="animation-delay: 0s; animation-duration: 22s;">
+  <img src="photo6.jpg" class="floating-photo col1" style="animation-delay: 4s; animation-duration: 22s;">
+  <img src="photo2.jpg" class="floating-photo col2" style="animation-delay: 2s; animation-duration: 26s;">
+  <img src="photo7.jpg" class="floating-photo col2" style="animation-delay: 6s; animation-duration: 26s;">
+  <img src="photo3.jpg" class="floating-photo col3" style="animation-delay: 1s; animation-duration: 24s;">
+  <img src="photo8.jpg" class="floating-photo col3" style="animation-delay: 5s; animation-duration: 24s;">
+  <img src="photo4.jpg" class="floating-photo col4" style="animation-delay: 0s; animation-duration: 28s;">
+  <img src="photo9.jpg" class="floating-photo col4" style="animation-delay: 4s; animation-duration: 28s;">
+  <img src="photo5.jpg" class="floating-photo col5" style="animation-delay: 3s; animation-duration: 30s;">
+  <img src="photo10.jpg" class="floating-photo col5" style="animation-delay: 7s; animation-duration: 30s;">
 
-  const calendar = document.getElementById("calendar");
+  <script>
+    const startDate = new Date("2025-05-22");
+    const countdownDays = 20;
+    const unlockHour = 9;
+    const now = new Date();
 
-  for (let i = 0; i < countdownDays; i++) {
-    const dayDate = new Date(startDate);
-    dayDate.setDate(startDate.getDate() + i); // From May 17 → May 23
-    const unlockTime = new Date(dayDate);
-    unlockTime.setHours(unlockHour, 0, 0, 0);
+    const messages = [
+      "Day 1: You're my favorite hello and hardest goodbye 💌",
+      "Day 2: You're the peanut butter to my jelly 🥰",
+      "Day 3: I hope your smile lasts forever 🌈",
+      "Day 4: Every day with you is the best day 💫",
+      "Day 5: You are my comfy zone 🧸",
+      "Day 6: Thinking of you makes my heart flutter 🦨",
+      "Day 7: You're my sunshine on a cloudy day ☀️",
+      "Day 8: Love you more than all the stars ✨",
+      "Day 9: I’m so lucky to love you 🎀",
+      "Day 10: You make my world so much brighter 🌟",
+      "Day 11: You’re my dream come true 💖",
+      "Day 12: My favorite place is next to you 💞",
+      "Day 13: Forever isn’t long enough with you 💍",
+      "Day 14: You’re the reason I believe in magic ✨",
+      "Day 15: Happy Birthday, my love! 🎂❤️", 
+            "Day 16: Happy Birthday, my love! 🎂❤️", 
+                  "Day 17: Happy Birthday, my love! 🎂❤️", 
+                        "Day 18: Happy Birthday, my love! 🎂❤️", 
+                              "Day 19: Happy Birthday, my love! 🎂❤️", 
+                                    "Day 20: Happy Birthday, my love! 🎂❤️", 
+      
+    ];
 
-    const dayEl = document.createElement("div");
-    dayEl.classList.add("day");
-    dayEl.innerText = `Day ${i + 1}`;
+    const calendar = document.getElementById("calendar");
 
-    if (
-      now.toDateString() === dayDate.toDateString() &&
-      now >= unlockTime
-    ) {
-      // Clickable today after 9AM
-      dayEl.onclick = () => showPopup(messages[i]);
-    } else if (now > unlockTime) {
-      // Past days (already unlocked)
-      dayEl.onclick = () => showPopup(messages[i]);
-    } else {
-      // Locked days (future or before unlock hour)
-      dayEl.classList.add("locked");
-      dayEl.onclick = () => {
-        const today = now.toDateString() === dayDate.toDateString();
-        if (today && now < unlockTime) {
-          showPopup("Come back");
-        } else {
-          showPopup("locked");
-        }
-      };
+    for (let i = 0; i < countdownDays; i++) {
+      const dayDate = new Date(startDate);
+      dayDate.setDate(startDate.getDate() + i);
+      const unlockTime = new Date(dayDate);
+      unlockTime.setHours(unlockHour, 0, 0, 0);
+
+      const dayEl = document.createElement("div");
+      dayEl.classList.add("day");
+      dayEl.innerText = `Day ${i + 1}`;
+
+      if (now.toDateString() === dayDate.toDateString() && now >= unlockTime) {
+      dayEl.onclick = () => showPopup(messages[i], i);
+
+      } else if (now > unlockTime) {
+        dayEl.onclick = () => showPopup(messages[i], 0);
+
+      } else {
+        dayEl.classList.add("locked");
+        dayEl.onclick = () => {
+          const today = now.toDateString() === dayDate.toDateString();
+          showPopup(today && now < unlockTime ? "Одоо жаахан 🤭" : "Арай болоогүй ээ 😋");
+        };
+      }
+
+      calendar.appendChild(dayEl);
     }
 
-    calendar.appendChild(dayEl);
-  }
+function showPopup(message, index = null) {
+  document.getElementById("popupContent").innerText = message;
 
-  function showPopup(message) {
-    document.getElementById("popupContent").innerText = message;
-    document.getElementById("popup").classList.add("show");
-  }
+  const button = document.querySelector("#popup button");
+if (index === 0) {
+  button.innerText = "Aww cutie 🎉";
+} else if (index !== null) {
+  button.innerText = "Man happy 🎉";
+} else {
+  button.innerText = "Man sad 💕";
+}
 
-  function closePopup() {
-    document.getElementById("popup").classList.remove("show");
-  }
-</script>
+
+  document.getElementById("popup").classList.add("show");
+}
 
 
+    function closePopup() {
+      document.getElementById("popup").classList.remove("show");
+    }
+
+    const heartContainer = document.getElementById('heartContainer');
+
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.style.left = `${Math.random() * 100}%`;
+      heart.style.animationDuration = `${6 + Math.random() * 4}s`;
+      heart.style.opacity = `${0.5 + Math.random() * 0.5}`;
+      heartContainer.appendChild(heart);
+      setTimeout(() => heart.remove(), 10000);
+    }
+
+    const heartInterval = window.innerWidth < 600 ? 1000 : 500;
+    setInterval(createHeart, heartInterval);
+
+    if (window.innerWidth < 600) {
+      document.querySelectorAll('.floating-photo').forEach((img, i) => {
+        if (i % 2 !== 0) img.remove();
+      });
+    }
+  </script>
 </body>
 </html>
