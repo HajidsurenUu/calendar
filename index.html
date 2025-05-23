@@ -219,8 +219,7 @@ body {
     const now = new Date();
 
     const messages = [
-    "2025.05.24\n\nХалуухан чамдаа сэрүүцүүлэгч наалт бэлэглэе 🧊💕",
-
+      "Day 1: Cooling pad for my hot guy 🧊",
       "Day 2: You're the peanut butter to my jelly 🥰",
       "Day 3: I hope your smile lasts forever 🌈",
       "Day 4: Every day with you is the best day 💫",
@@ -253,7 +252,10 @@ body {
 
       const dayEl = document.createElement("div");
       dayEl.classList.add("day");
-      dayEl.innerText = `Day ${i + 1}`;
+dayEl.innerText = dayDate.toLocaleDateString("en-US", {
+  month: "short",
+  day: "numeric"
+});
 
       if (now.toDateString() === dayDate.toDateString() && now >= unlockTime) {
       dayEl.onclick = () => showPopup(messages[i], i);
@@ -265,7 +267,10 @@ body {
         dayEl.classList.add("locked");
         dayEl.onclick = () => {
           const today = now.toDateString() === dayDate.toDateString();
-          showPopup(today && now < unlockTime ? "Одоо жаахан 🤭" : "Арай болоогүй ээ 😋");
+         
+
+
+          showPopup(today && now < unlockTime ?    "Almost there 🤭" : "Not time yet 😋");
         };
       }
 
@@ -277,11 +282,11 @@ function showPopup(message, index = null) {
 
   const button = document.querySelector("#popup button");
 if (index === 0) {
-  button.innerText = "Aww cutie 🎉";
+  button.innerText = "Aww cutie 🥰";
 } else if (index !== null) {
-  button.innerText = "Man happy 🎉";
+  button.innerText = "Man happy";
 } else {
-  button.innerText = "Man sad 💕";
+  button.innerText = "Man sad";
 }
 
 
